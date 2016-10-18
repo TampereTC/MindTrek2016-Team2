@@ -1,0 +1,127 @@
+<!doctype html>
+
+<html lang="en">
+<head>
+	<script src="../scripts/jquery-3.1.1.min.js"></script>
+	<style>
+		.button {
+			background-color: blue;
+			border: none;
+			color: white;
+			padding: 15px 32px;
+			text-align: center;
+			text-decoration: none;
+			display: inline-block;
+			font-size: 16px;
+			margin: 4px 2px;
+			cursor: pointer;
+		}
+	</style>
+</head>
+<body>
+	<h2>Keyboard control:</h2>
+	<p><b>UP</b> arrow - forward</p>
+	<p><b>DOWN</b> arrow - backward</p>
+	<p><b>LEFT</b> arrow - turn left</p>
+	<p><b>RIGHT</b> arrow - turn right</p>
+	<p><b>SPACE</b> - up</p>
+	<br/><br/>
+	<button class="button" onClick="up()">Up</button>
+	<button class="button" onClick="left()">Turn Left</button>
+	<button class="button" onClick="right()">Turn Right</button>
+	<button class="button" onClick="forward()">Forward</button>
+	<button class="button" onClick="backward()">Backward</button>
+	
+	<script>
+		
+		var forwardCmd = "mosquitto_pub -h 54.93.150.126 -t team2_write -i i-51210fed -m '{\"m1\" : \"2\", \"m2\" : \"1\", \"m_up\" : \"0\", \"time\" : \"50\", \"command_id\" : \"255\"}\'";
+		var backwardCmd = "mosquitto_pub -h 54.93.150.126 -t team2_write -i i-51210fed -m '{\"m1\" : \"1\", \"m2\" : \"2\", \"m_up\" : \"0\", \"time\" : \"50\", \"command_id\" : \"255\"}\'";
+		var upCmd = "mosquitto_pub -h 54.93.150.126 -t team2_write -i i-51210fed -m '{\"m1\" : \"0\", \"m2\" : \"0\", \"m_up\" : \"4\", \"time\" : \"80\", \"command_id\" : \"255\"}\'";
+		var downCmd = "mosquitto_pub -h 54.93.150.126 -t team2_write -i i-51210fed -m '{\"m1\" : \"2\", \"m2\" : \"0\", \"m_up\" : \"5\", \"time\" : \"100\", \"command_id\" : \"255\"}\'";
+		var leftCmd = "mosquitto_pub -h 54.93.150.126 -t team2_write -i i-51210fed -m '{\"m1\" : \"2\", \"m2\" : \"0\", \"m_up\" : \"0\", \"time\" : \"25\", \"command_id\" : \"255\"}\'";
+		var rightCmd = "mosquitto_pub -h 54.93.150.126 -t team2_write -i i-51210fed -m '{\"m1\" : \"0\", \"m2\" : \"1\", \"m_up\" : \"0\", \"time\" : \"12\", \"command_id\" : \"255\"}\'";
+
+		
+		function up() {
+			console.log("up");
+			requestCommand( upCmd );
+		}
+		
+		function left() {
+			console.log("left");
+			requestCommand(leftCmd);
+		}
+		
+		function right() {
+			console.log("right");
+			requestCommand(rightCmd);
+		}
+		
+		function forward() {
+			console.log("forward");
+			requestCommand(forwardCmd);
+		}
+		
+		function backward() {
+			console.log("backward");
+			requestCommand(backwardCmd);
+		}
+		
+		function requestCommand(cmd) {
+			$.ajax({
+				cache: false,
+				url: "../move/" + cmd,
+				type: 'GET',
+				success: function(json) { 
+					console.log("Command success!");
+				},
+				error: function(response) {
+					console.log("Command error!");
+				}
+			});		
+		}
+		
+document.onkeydown = checkKey;
+
+var UP_KEY = '38';
+var DOWN_KEY = '40';
+var LEFT_KEY = '37';
+var RIGHT_KEY = '39';
+var SPACE_KEY = '32';
+var ENTER_KEY = '13';
+
+function checkKey(e) {
+
+    e = e || window.event;
+	
+    if (e.keyCode == UP_KEY) {
+		requestCommand(forwardCmd);
+        console.log("up");
+    }
+    else if (e.keyCode == DOWN_KEY) {
+		requestCommand(backwardCmd);
+        console.log("down");
+    }
+    else if (e.keyCode == LEFT_KEY) {
+	   requestCommand(leftCmd);
+       console.log("left");
+    }
+    else if (e.keyCode == RIGHT_KEY) {
+	   requestCommand(rightCmd);
+       console.log("right");
+    } 
+	else if (e.keyCode == SPACE_KEY) {
+	   requestCommand( upCmd );
+       console.log("up");
+    }
+}
+
+function isControllerKey(e) {
+	return e.keyCode == UP_KEY ||
+			e.keyCode == DOWN_KEY ||
+			e.keyCode == LEFT_KEY ||
+			e.keyCode == RIGHT_KEY ||
+			e.keyCode == SPACE_KEY;
+}		
+	</script>
+</body>
