@@ -25,6 +25,7 @@
 	<p><b>LEFT</b> arrow - turn left</p>
 	<p><b>RIGHT</b> arrow - turn right</p>
 	<p><b>SPACE</b> - up</p>
+	<p><b>L</b> - ..</p>
 	<br/><br/>
 	<button class="button" onClick="up()">Up</button>
 	<button class="button" onClick="left()">Turn Left</button>
@@ -34,12 +35,13 @@
 	
 	<script>
 		
-		var forwardCmd = "mosquitto_pub -h 54.93.150.126 -t team2_write -i i-51210fed -m '{\"m1\" : \"2\", \"m2\" : \"1\", \"m_up\" : \"0\", \"time\" : \"50\", \"command_id\" : \"255\"}\'";
-		var backwardCmd = "mosquitto_pub -h 54.93.150.126 -t team2_write -i i-51210fed -m '{\"m1\" : \"1\", \"m2\" : \"2\", \"m_up\" : \"0\", \"time\" : \"50\", \"command_id\" : \"255\"}\'";
-		var upCmd = "mosquitto_pub -h 54.93.150.126 -t team2_write -i i-51210fed -m '{\"m1\" : \"0\", \"m2\" : \"0\", \"m_up\" : \"4\", \"time\" : \"80\", \"command_id\" : \"255\"}\'";
-		var downCmd = "mosquitto_pub -h 54.93.150.126 -t team2_write -i i-51210fed -m '{\"m1\" : \"2\", \"m2\" : \"0\", \"m_up\" : \"5\", \"time\" : \"100\", \"command_id\" : \"255\"}\'";
-		var leftCmd = "mosquitto_pub -h 54.93.150.126 -t team2_write -i i-51210fed -m '{\"m1\" : \"2\", \"m2\" : \"0\", \"m_up\" : \"0\", \"time\" : \"25\", \"command_id\" : \"255\"}\'";
-		var rightCmd = "mosquitto_pub -h 54.93.150.126 -t team2_write -i i-51210fed -m '{\"m1\" : \"0\", \"m2\" : \"1\", \"m_up\" : \"0\", \"time\" : \"12\", \"command_id\" : \"255\"}\'";
+		var backwardCmd = "mosquitto_pub -h 54.93.150.126 -t team1_write -i i-51210fed -m '{\"m1\" : \"1\", \"m2\" : \"1\", \"m_up\" : \"0\", \"time\" : \"50\", \"command_id\" : \"255\"}\'";
+		var forwardCmd = "mosquitto_pub -h 54.93.150.126 -t team1_write -i i-51210fed -m '{\"m1\" : \"2\", \"m2\" : \"2\", \"m_up\" : \"0\", \"time\" : \"50\", \"command_id\" : \"255\"}\'";
+		var upCmd = "mosquitto_pub -h 54.93.150.126 -t team1_write -i i-51210fed -m '{\"m1\" : \"0\", \"m2\" : \"0\", \"m_up\" : \"4\", \"time\" : \"40\", \"command_id\" : \"255\"}\'";
+		var downCmd = "mosquitto_pub -h 54.93.150.126 -t team1_write -i i-51210fed -m '{\"m1\" : \"2\", \"m2\" : \"0\", \"m_up\" : \"5\", \"time\" : \"100\", \"command_id\" : \"255\"}\'";
+		var leftCmd = "mosquitto_pub -h 54.93.150.126 -t team1_write -i i-51210fed -m '{\"m1\" : \"2\", \"m2\" : \"0\", \"m_up\" : \"0\", \"time\" : \"25\", \"command_id\" : \"255\"}\'";
+		var rightCmd = "mosquitto_pub -h 54.93.150.126 -t team1_write -i i-51210fed -m '{\"m1\" : \"0\", \"m2\" : \"2\", \"m_up\" : \"0\", \"time\" : \"25\", \"command_id\" : \"255\"}\'";
+		var listenCmd = "mosquitto_sub -h 54.93.150.126 -t team1_read -k 60";
 
 		
 		function up() {
@@ -81,6 +83,20 @@
 			});		
 		}
 		
+		function startMqttListening() {
+			$.ajax({
+				cache: false,
+				url: "../listen/",
+				type: 'GET',
+				success: function(json) { 
+					console.log("Command success!");
+				},
+				error: function(response) {
+					console.log("Command error!");
+				}
+			});		
+		}
+		
 document.onkeydown = checkKey;
 
 var UP_KEY = '38';
@@ -89,6 +105,7 @@ var LEFT_KEY = '37';
 var RIGHT_KEY = '39';
 var SPACE_KEY = '32';
 var ENTER_KEY = '13';
+var L_KEY = '76';
 
 function checkKey(e) {
 
@@ -114,6 +131,10 @@ function checkKey(e) {
 	   requestCommand( upCmd );
        console.log("up");
     }
+	else if (e.keyCode == L_KEY) {
+	   startMqttListening();
+       console.log("listen");
+    }
 }
 
 function isControllerKey(e) {
@@ -121,7 +142,8 @@ function isControllerKey(e) {
 			e.keyCode == DOWN_KEY ||
 			e.keyCode == LEFT_KEY ||
 			e.keyCode == RIGHT_KEY ||
-			e.keyCode == SPACE_KEY;
+			e.keyCode == SPACE_KEY ||
+			e.keyCode == L_KEY;
 }		
 	</script>
 </body>
